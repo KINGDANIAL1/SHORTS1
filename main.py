@@ -4,32 +4,40 @@ import time
 import tempfile
 from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
 import schedule
 
 # إعدادات Google API
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload', 'https://www.googleapis.com/auth/drive.readonly']
-CLIENT_SECRET_FILE = 'client_secret_696881090954-4afjsjqmmhh16fkkj2fs82dk8muijjbl.apps.googleusercontent.com.json'
-SERVICE_ACCOUNT_FILE = 'scenic-kiln-451620-t8-b16dd8a13bbd.json'
-TOKEN_FILE = 'token.json'  # يتم إنشاؤه بعد أول تسجيل دخول
+
+# ملفات التكوين (يمكنك استبدالها بمتغيرات بيئية)
+CLIENT_SECRET_FILE = os.getenv("CLIENT_SECRET_FILE", "client_secret.json")  # إذا تحتاج استخدامه (مش ضروري مع TOKEN_JSON فقط)
+SERVICE_ACCOUNT_FILE = os.getenv("SERVICE_ACCOUNT_FILE", "service_account.json")
+TOKEN_FILE = os.getenv("TOKEN_FILE", "token.json")  # احتياطي إذا لم تستخدم TOKEN_JSON
 
 POSTED_LOG = "posted_from_drive.txt"
 
-# إنشاء خدمة YouTube API
 def get_youtube_service():
     creds = None
-    if os.path.exists(TOKEN_FILE):
+
+    token_json = os.getenv("TOKEN_JSON")
+    if token_json:
+        # إنشاء ملف مؤقت من محتوى TOKEN_JSON
+        with tempfile.NamedTemporaryFile(mode="w+", suffix=".json", delete=False) as tmp_file:
+            tmp_file.write(token_json)
+            tmp_file.flush()
+            token_path = tmp_file.name
+        creds = Credentials.from_authorized_user_file(token_path, SCOPES)
+        os.remove(token_path)
+    elif os.path.exists(TOKEN_FILE):
         creds = Credentials.from_authorized_user_file(TOKEN_FILE, SCOPES)
+
     if not creds or not creds.valid:
-        flow = InstalledAppFlow.from_client_secrets_file(CLIENT_SECRET_FILE, SCOPES)
-        creds = flow.run_local_server(port=0)  # ✅ هذا هو التعديل المطلوب
-        with open(TOKEN_FILE, 'w') as token:
-            token.write(creds.to_json())
+        raise Exception("❌ لا يوجد توكن صالح. يجب إعداد TOKEN_JSON أو عمل المصادقة محلياً أولاً.")
+
     return build('youtube', 'v3', credentials=creds)
 
-# إنشاء خدمة Google Drive
 def get_drive_service():
     credentials = service_account.Credentials.from_service_account_file(
         SERVICE_ACCOUNT_FILE,
