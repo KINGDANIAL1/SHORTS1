@@ -127,8 +127,8 @@ def main():
         random.shuffle(available)
         publish_youtube_short(youtube, drive, available[0])
 
-    schedule.every().day.at("09:00").do(job)
-    schedule.every().day.at("15:00").do(job)
+    schedule.every().day.at("10:00").do(job)
+    schedule.every().day.at("14:00").do(job)
 
     print("⏰ السكربت يعمل تلقائيًا...")
     try:
