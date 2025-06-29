@@ -2,17 +2,39 @@ import os
 import random
 import time
 import tempfile
+import schedule
 from google.oauth2.credentials import Credentials
 from google.oauth2 import service_account
-from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseUpload, MediaIoBaseDownload
-import schedule
 
 # إعدادات Google API
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload', 'https://www.googleapis.com/auth/drive.readonly']
-TOKEN_FILE = 'token.json'  # يتم إنشاؤه بعد أول تسجيل دخول
+TOKEN_FILE = 'token.json'
 POSTED_LOG = "posted_from_drive.txt"
+
+# عناوين قوية لجذب المشاهد
+TITLES = [
+    "❌ أكبر خطأ ترتكبه كل يوم! ",
+    "🚀 كيف تبدأ من الصفر؟ شاهد هذا",
+    "🔥 هذه الجملة غيرت حياة الآلاف!",
+    "💡 سر النجاح في دقيقة!",
+    "📉 لماذا يفشل معظم الناس؟",
+    "🧠 تمرين ذهني يغير كل شيء!"
+]
+
+# وسوم ذكية تؤثر على الخوارزمية
+DEFAULT_HASHTAGS = [
+     "#تعلم", "#تحفيز", "#ريادة_أعمال", "#نصائح", "#ابدأ_الآن"
+]
+
+# وصف احترافي للفيديو
+DESCRIPTION = """
+🔥 فيديو قصير مليء بالإلهام!
+📌 لا تنسَ الاشتراك لمزيد من الفيديوهات التحفيزية.
+
+#ريادة_أعمال #تحفيز #ابدأ
+"""
 
 # إنشاء خدمة YouTube API
 def get_youtube_service():
@@ -40,10 +62,7 @@ def get_drive_service():
         tmp_file.flush()
         tmp_path = tmp_file.name
 
-    credentials = service_account.Credentials.from_service_account_file(
-        tmp_path,
-        scopes=SCOPES
-    )
+    credentials = service_account.Credentials.from_service_account_file(tmp_path, scopes=SCOPES)
     os.remove(tmp_path)
     return build('drive', 'v3', credentials=credentials)
 
@@ -81,7 +100,7 @@ def upload_video_to_youtube(youtube, file_path, title, description, tags=[]):
         "snippet": {
             "title": title,
             "description": description,
-            "tags": tags,
+            "tags": [tag.strip("#") for tag in tags],
             "categoryId": "22"
         },
         "status": {
@@ -98,12 +117,8 @@ def upload_video_to_youtube(youtube, file_path, title, description, tags=[]):
 def publish_youtube_short(youtube, drive, file):
     tmp_path = download_video(drive, file)
     try:
-        title = random.choice([
-            "🚀 اكتشف هذا الفيديو الآن! #shorts",
-            "🔥 لا تفوّت هذا المحتوى! #shorts",
-            "💡 فكرة ستغيّر تفكيرك! #shorts",
-        ])
-        upload_video_to_youtube(youtube, tmp_path, title, "فيديو قصير من أجلك 🔥 #shorts")
+        title = random.choice(TITLES)
+        upload_video_to_youtube(youtube, tmp_path, title, DESCRIPTION, DEFAULT_HASHTAGS)
         save_posted(file['name'])
     except Exception as e:
         print(f"❌ فشل النشر: {e}")
@@ -129,6 +144,8 @@ def main():
 
     schedule.every().day.at("10:00").do(job)
     schedule.every().day.at("14:00").do(job)
+    schedule.every().day.at("18:00").do(job)
+    schedule.every().day.at("21:00").do(job)
 
     print("⏰ السكربت يعمل تلقائيًا...")
     try:
