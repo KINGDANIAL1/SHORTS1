@@ -147,10 +147,21 @@ def main():
         publish_youtube_short(youtube, drive, available[0])
 
     # أوقات النشر المثالية
-    schedule.every().day.at("11:00").do(job)
-    schedule.every().day.at("14:00").do(job)
-    schedule.every().day.at("18:00").do(job)
-    schedule.every().day.at("21:00").do(job)
+   # أوقات النشر المثالية (من الاثنين للجمعة فقط)
+schedule.every().monday.at("11:00").do(job)
+schedule.every().monday.at("18:00").do(job)
+
+schedule.every().tuesday.at("11:00").do(job)
+schedule.every().tuesday.at("18:00").do(job)
+
+schedule.every().wednesday.at("11:00").do(job)
+schedule.every().wednesday.at("18:00").do(job)
+
+schedule.every().thursday.at("11:00").do(job)
+schedule.every().thursday.at("18:00").do(job)
+
+schedule.every().friday.at("11:00").do(job)
+schedule.every().friday.at("18:00").do(job)
 
     print("⏰ السكربت يعمل تلقائيًا...")
     try:
