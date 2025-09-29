@@ -1,4 +1,4 @@
-import os
+import oshttps://github.com/KINGDANIAL1/SHORTS1/edit/main/main.py
 import random
 import time
 import tempfile
@@ -148,20 +148,20 @@ def main():
 
     # أوقات النشر المثالية
    # أوقات النشر المثالية (من الاثنين للجمعة فقط)
-schedule.every().monday.at("11:00").do(job)
-schedule.every().monday.at("18:00").do(job)
+   schedule.every().monday.at("11:00").do(job)
+   schedule.every().monday.at("18:00").do(job)
 
-schedule.every().tuesday.at("11:00").do(job)
-schedule.every().tuesday.at("18:00").do(job)
+   schedule.every().tuesday.at("11:00").do(job)
+   schedule.every().tuesday.at("18:00").do(job)
 
-schedule.every().wednesday.at("11:00").do(job)
-schedule.every().wednesday.at("18:00").do(job)
+   schedule.every().wednesday.at("11:00").do(job)
+   schedule.every().wednesday.at("18:00").do(job)
 
-schedule.every().thursday.at("11:00").do(job)
-schedule.every().thursday.at("18:00").do(job)
+   schedule.every().thursday.at("11:00").do(job)
+   schedule.every().thursday.at("18:00").do(job)
 
-schedule.every().friday.at("11:00").do(job)
-schedule.every().friday.at("18:00").do(job)
+   schedule.every().friday.at("11:00").do(job)
+   schedule.every().friday.at("18:00").do(job)
 
     print("⏰ السكربت يعمل تلقائيًا...")
     try:
